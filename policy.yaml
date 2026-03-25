@@ -1,0 +1,46 @@
+version: "1.0"
+
+# Risk weights per entity type — contributes to the 0.0–1.0 exposure score.
+# Auditable here so security teams can adjust without touching code.
+entity_weights:
+  US_SSN: 10
+  CREDIT_CARD: 10
+  EMAIL_ADDRESS: 5
+  PHONE_NUMBER: 5
+  PERSON: 3
+  IP_ADDRESS: 3
+
+# Policies define how each entity type is handled per operation context.
+# Actions: allow | redact | pseudonymize | block
+policies:
+  - name: internal_analysis
+    context: analysis
+    rules:
+      - entity: US_SSN
+        action: block
+      - entity: CREDIT_CARD
+        action: redact
+      - entity: EMAIL_ADDRESS
+        action: pseudonymize
+      - entity: PHONE_NUMBER
+        action: redact
+      - entity: PERSON
+        action: pseudonymize
+      - entity: IP_ADDRESS
+        action: allow
+
+  - name: external_export
+    context: export
+    rules:
+      - entity: US_SSN
+        action: block
+      - entity: CREDIT_CARD
+        action: block
+      - entity: EMAIL_ADDRESS
+        action: block
+      - entity: PHONE_NUMBER
+        action: block
+      - entity: PERSON
+        action: redact
+      - entity: IP_ADDRESS
+        action: redact
